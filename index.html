@@ -38,22 +38,1245 @@
       <span class="v1_14">
         Powerful, extensible, and feature-packed frontend toolkit. Build and customize with Sass, utilize prebuilt grid system and components, and bring projects to life with powerful JavaScript plugins.
       </span>
-      <div class="barra-lateral">
-        <!-- Spring Boot -->
-        <button class="boton-icono" title="Spring Boot">
-          <img src="https://static-00.iconduck.com/assets.00/spring-boot-icon-512x511-pza8zvqu.png" alt="Spring Boot">
-        </button>
-      
-        <!-- Angular -->
-        <button class="boton-icono" title="Angular">
-          <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1SmylsgYtG0Yf-McK4-nk5Zh5pMY1UcIELw&s" alt="Angular">
-        </button>
-      
-        <!-- Android -->
-        <button class="boton-icono" title="Aplicaciones móviles">
-          <img src="https://cdn3.iconfinder.com/data/icons/picons-social/57/36-android-512.png" alt="Android">
-        </button>
+   <!-- Contenedor lateral -->
+<div class="barra-lateral">
+  <!-- Spring Boot -->
+  <button class="boton-icono" title="Spring Boot" onclick="copiarCodigo('codigo-spring')">
+    <img src="https://static-00.iconduck.com/assets.00/spring-boot-icon-512x511-pza8zvqu.png" alt="Spring Boot">
+  </button>
+
+  <!-- Angular -->
+  <button class="boton-icono" title="Angular" onclick="copiarCodigo('codigo-angular')">
+    <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcS1SmylsgYtG0Yf-McK4-nk5Zh5pMY1UcIELw&s" alt="Angular">
+  </button>
+
+  <!-- Android -->
+  <button class="boton-icono" title="Aplicaciones móviles" onclick="copiarCodigo('codigo-android')">
+    <img src="https://cdn3.iconfinder.com/data/icons/picons-social/57/36-android-512.png" alt="Android">
+  </button>
+</div>
+
+<!-- Bloques ocultos con código extenso -->
+<script id="codigo-spring" type="text/plain">
+  //////////////////////////////////////////////////////////SecurityConfig
+  @Configuration
+@EnableWebSecurity
+public class SecurityConfig {
+    @Autowired
+    UserDetailsServiceImplements userDetailsServiceImplements;
+    @Bean
+    public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception{
+        http.formLogin((FormLoginConfigurer<HttpSecurity>form) -> form.loginPage("/login")
+                .defaultSuccessUrl("/")
+                .permitAll());
+        http.authorizeHttpRequests((authorizer)-> authorizer
+                .requestMatchers("/login","/register").permitAll()
+                .anyRequest().authenticated());
+        http.logout(logout -> logout
+                .logoutUrl("/logout")
+                .logoutSuccessUrl("/login?logout")
+                .permitAll());
+        return http.build();
+    }
+    /* @Bean //Usuario en bruto
+     public UserDetailsManager user(){
+         UserDetails user = User.builder()
+                 .username("vflores")
+                 .password("{bcrypt}$2a$10$9vovQZ5v/BlVPTwFCabQ7ORZUos2WDkETuJDfF7s7cqVZf/0kKhzS")
+                 .roles("ADMIN")
+                 .build();
+         return new InMemoryUserDetailsManager(user);
+
+     }*/
+    @Bean
+    public PasswordEncoder passwordEncoder(){
+        return new BCryptPasswordEncoder();
+    }
+    @Bean
+    public AuthenticationProvider authenticationProvider(){
+        DaoAuthenticationProvider daoAuthenticationProvider = new DaoAuthenticationProvider();
+        daoAuthenticationProvider.setUserDetailsService(userDetailsServiceImplements);
+        daoAuthenticationProvider.setPasswordEncoder(passwordEncoder());
+        return daoAuthenticationProvider;
+    }
+}
+  //////////////////////////////////////////////////////// User
+  @Entity(name="users")
+public class User {
+    @Id()
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private String last;
+    private String email;
+    @Column(unique = true)
+    private String username;
+    private String password;
+    @ManyToMany(fetch = FetchType.EAGER)
+    @JoinTable(name="user_roles", joinColumns =@JoinColumn(name = "user_id"),
+            inverseJoinColumns = @JoinColumn(name = "role_id")
+    )
+    private List<Role> roles = new ArrayList<Role>();
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public String getLast() {
+        return last;
+    }
+
+    public void setLast(String last) {
+        this.last = last;
+    }
+
+    public String getEmail() {
+        return email;
+    }
+
+    public void setEmail(String email) {
+        this.email = email;
+    }
+
+    public String getUsername() {
+        return username;
+    }
+
+    public void setUsername(String username) {
+        this.username = username;
+    }
+
+    public String getPassword() {
+        return password;
+    }
+
+    public void setPassword(String password) {
+        this.password = password;
+    }
+
+    public List<Role> getRoles() {
+        return roles;
+    }
+
+    public void setRoles(List<Role> roles) {
+        this.roles = roles;
+    }
+
+}
+/////////////////////////////Product
+@Entity(name ="products")
+public class Product {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    private double price;
+    private int stock;
+    private String description;
+
+    @ManyToOne
+    @JoinColumn(name = "category_id", nullable = false)
+    private Category category;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public double getPrice() {
+        return price;
+    }
+
+    public void setPrice(double price) {
+        this.price = price;
+    }
+
+    public int getStock() {
+        return stock;
+    }
+
+    public void setStock(int stock) {
+        this.stock = stock;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
+    }
+
+    public Category getCategory() {
+        return category;
+    }
+
+    public void setCategory(Category category) {
+        this.category = category;
+    }
+
+}
+//////////////////////////////////////Category
+@Entity(name ="categories")
+public class Category {
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    private Long id;
+    private String name;
+    @OneToMany(mappedBy = "category", cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+    private List<Product> products;
+
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public List<Product> getProducts() {
+        return products;
+    }
+
+    public void setProducts(List<Product> products) {
+        this.products = products;
+    }
+}
+//////////////////////////////////////UserRepository
+@Repository
+public interface UserRepository extends JpaRepository<User, Long> {
+    Optional <User> findByUsername(String username);
+}
+/////////////////////////////////////////UserService
+@Service
+public class UserService {
+    @Autowired
+    UserRepository repository;
+
+    @Autowired
+    RolRepository rolerepository;
+
+    public User save(User user){
+        user.setPassword(new BCryptPasswordEncoder().encode(user.getPassword()));
+        //Buscar Rol o si no crearlo
+        Role userRole = rolerepository.findByName("ROLE_ADMIN").
+                orElseGet(()->{
+                    Role newRole = new Role();
+                    newRole.setName("ROLE_ADMIN");
+                    return rolerepository.save(newRole);
+                });
+        user.getRoles().add(userRole);
+       return  this.repository.save(user);
+    }
+}
+//////////////////////////////////////////////////////////////////////UserDetailsServiceImplements
+@Service
+public class UserDetailsServiceImplements implements UserDetailsService {
+
+    @Autowired
+    UserRepository userRepository;
+
+    @Override
+    public UserDetails loadUserByUsername(String username) throws UsernameNotFoundException {
+        User user = userRepository.findByUsername(username)
+                .orElseThrow(()->new UsernameNotFoundException("Usuario Encontrado"));
+        return new org.springframework.security.core.userdetails.User(
+                user.getUsername(),
+                user.getPassword(),
+                Collections.emptyList()
+        );
+    }
+}
+//////////////////////////////////////////////////////////ProductService
+@Service
+public class ProductService {
+    @Autowired
+    ProductRepository productRepository;
+    public Product saveProduct(Product product){
+        return productRepository.save(product);
+    }
+
+    public List<Product> getAllProducts() {
+        return productRepository.findAll();
+    }
+    //Obtener id producto
+    public Optional<Product> getProductById(Long id){
+        return productRepository.findById(id);
+    }
+    //Eliminar producto
+    public void deleteProduct(Long id) {
+        productRepository.deleteById(id);
+    }
+}
+/////////////////////////////////////////////////////////////////CategoryService
+@Service
+public class CategoryService {
+    @Autowired
+    CategoryRepository categoryRepository;
+//Obtener lista de categorias
+    public List<Category> getAllCategories(){
+        return categoryRepository.findAll();
+    }
+}
+////////////////////////////////////////////////////////////////UserController
+@Controller
+public class UserController {
+    @Autowired
+    UserService service;
+
+    @GetMapping("/register")
+    public String getFormRegister(Model model, Authentication authentication) {
+        model.addAttribute("user",new User());
+        if(authentication !=null && authentication.isAuthenticated()){
+            return "redirect:/";
+        }
+        return "auth/register"; //template
+    }
+    @PostMapping("/register")
+    public RedirectView registerUser(@ModelAttribute User user){
+         try{
+         this.service.save(user);
+        return new RedirectView("/login");
+         }catch (Exception ex){
+             System.out.println(ex.getMessage());
+             return new RedirectView("/register?duplicate");
+         }
+    }
+
+}
+///////////////////////////////////////////////////////////////////AuthController 
+@Controller
+public class AuthController {
+    @GetMapping("/login")
+    public String getFormLogin( Authentication authentication){
+        if(authentication !=null && authentication.isAuthenticated()){
+            return "redirect:/";
+        }
+        return "auth/login";
+    }
+    @GetMapping("/logout")
+    public String logout(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+        request.logout();
+        response.sendRedirect("/login?logout");
+        return null;
+
+    }
+}
+////////////////////////////////////////////////////////////////////////ProductController
+@Controller
+public class ProductController {
+    @Autowired
+    CategoryService categoryService;
+    @Autowired
+    ProductService productService;
+    @GetMapping("/add")
+    public String getFormProduct(Model model){
+        model.addAttribute("categories",categoryService.getAllCategories());
+        model.addAttribute("product", new Product());
+        return"product/add-product";
+
+    }
+    @PostMapping("/add")
+    public String addProduct(@ModelAttribute Product product){
+        productService.saveProduct(product);
+        return "redirect:/";
+    }
+    @GetMapping("/")
+    public String home(Model model, Authentication authentication){
+        String role = authentication.getAuthorities().stream().map(GrantedAuthority::getAuthority)
+                        .collect(Collectors.joining(","));
+        model.addAttribute("role",role);
+        model.addAttribute("products",productService.getAllProducts());
+        return "product/home";
+    }
+    @GetMapping("/product/edit/{id}")
+    public String getFormProduct(@PathVariable Long id,Model model){
+        Product product = productService.getProductById(id).orElseThrow();
+        model.addAttribute("product",product);
+        model.addAttribute("categories",categoryService.getAllCategories());
+        return "product/add-product";
+
+    }
+    @PostMapping("/product/edit/{id}")
+    public String editProduct(@PathVariable Long id, @ModelAttribute Product product){
+        product.setId(id);
+        productService.saveProduct(product);
+        return "redirect:/";
+    }
+
+    @PostMapping("/product/delete/{id}")
+    public String deleteProduct(@PathVariable Long id) {
+        productService.deleteProduct(id);
+        return "redirect:/";
+    }
+
+
+
+}
+///////////////////////////////////////////////thymeleaf
+xmlns:th="http://www.thymeleaf.org"
+////////////////////////////////////////////////login.html
+<div class="d-flex justify-content-center mt-5">
+  <form th:action="@{/login}" method="post">
+      <div class="card" style="width: 20rem;">
+          <div class="card-body d-flex-column gap-2" style="width: 20rem;">
+              <h1>Inciar Sesion</h1>
+          <input name="username"  class="form-control form-control-sm" type="text" placeholder="UserName" aria-label=".form-control-sm example">
+          <input name="password" class="form-control form-control-sm" type="password" placeholder="Password" aria-label=".form-control-sm example">
+          <div th:if="${param.error}" class="alert alert-danger" role="alert" >Usuario y/o contraseña incorrecta</div>
+              <div th:if="${param.logout}" class="alert alert-success" role="alert">Sesiòn correctamente cerrada</div>
+              <button type="submit" class="btn btn-dark">Registrarse</button>
       </div>
+          <div class="d-flex justify-content-center align-items-center mt-3">    <p class="text-muted">No tienes una cuenta?
+              <a th:href="@{/register}" class="text-dark fw-bold">Regístrate ahora</a>
+          </p>
+          </div>
+      </div>
+  </form>
+</div>
+//////////////////////////////////////////////////register.html
+<div class="d-flex justify-content-center mt-5">
+  <form th:action="@{/register}" th:object="${user}" method="post">
+      <div class="card" style="width: 20rem;">
+          <div class="card-body d-flex flex-column gap-2">
+              <input th:field="*{name}" class="form-control form-control-sm" type="text" placeholder="Name" aria-label="Name">
+              <input th:field="*{last}" class="form-control form-control-sm" type="text" placeholder="Last" aria-label="Last">
+              <input th:field="*{email}" class="form-control form-control-sm" type="email" placeholder="Email" aria-label="Email">
+              <input th:field="*{username}" class="form-control form-control-sm" type="text" placeholder="Username" aria-label="Username">
+              <input th:field="*{password}" class="form-control form-control-sm" type="password" placeholder="Password" aria-label="Password">
+
+              <div th:if="${param.duplicate}" class="alert alert-danger mt-2" role="alert">
+                  Ya existe ese usuario
+              </div>
+
+              <button type="submit" class="btn btn-dark mt-2">Register</button>
+
+              <div class="d-flex justify-content-center align-items-center mt-3">
+                  <p class="text-muted mb-0">
+                      ¿Ya tienes cuenta?
+                      <a th:href="@{/login}" class="text-dark fw-bold">Iniciar sesión ahora</a>
+                  </p>
+              </div>
+          </div>
+      </div>
+  </form>
+</div>
+//////////////////////////////////////////////////////////add-product.html
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+    <a class="navbar-brand" th:href="@{/}" style="font-size: 1.5rem;">RELSB</a>
+    <a class="navbar-brand ms-auto" th:href="@{/logout}" style="font-size: 1.2rem;">Cerrar sesión</a>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <h1 class="text-center mb-4">AGREGAR PRODUCTO</h1>
+  <form th:action="@{${product.id == null} ? '/add' : '/product/edit/'+${product.id}}" th:object="${product}" method="post">
+    <div>
+      <label for="name" class="form-label">Nombre</label>
+      <input th:field="*{name}" type="text" class="form-control" id="name" required>
+    </div>
+    <div class="mb-3">
+      <label for="price" class="form-label">Precio</label>
+      <input th:field="*{price}" type="number" class="form-control" id="price" required>
+    </div>
+    <div class="mb-3">
+      <label for="stock" class="form-label">Stock</label>
+      <input th:field="*{stock}" type="number" class="form-control" id="stock" required>
+    </div>
+    <div class="mb-3">
+      <label for="description" class="form-label">Descripción</label>
+      <textarea th:field="*{description}" class="form-control" id="description" rows="3" required></textarea>
+    </div>
+    <div class="mb-3">
+      <label for="category" class="form-label">Categoría</label>
+      <select th:field="*{category}" class="form-control" id="category" required>
+        <option value="" selected>Seleccionar Categoría</option>
+        <th:block th:each="category : ${categories}">
+          <option th:value="${category.id}" th:text="${category.name}"></option>
+        </th:block>
+      </select>
+    </div>
+    <div class="mb-3">
+      <button class="btn btn-success" type="submit">Guardar Producto</button>
+    </div>
+  </form>
+</div>
+//////////////////////////////////////////////////////////////////home.html
+<nav class="navbar navbar-expand-lg navbar-dark bg-dark">
+  <div class="container-fluid">
+      <a class="navbar-brand" th:href="@{/}" style="font-size: 1.5rem;">RELSB</a>
+
+      <a class="navbar-brand ms-auto" th:href="@{/logout}" style="font-size: 1.2rem;">Cerrar sesión</a>
+  </div>
+</nav>
+
+<div class="container mt-5">
+  <div class="text-center mb-4">
+      <h1 class="display 4">PRODUCTOS</h1>
+  </div>
+
+  <div class="mb-3" th:if="${role != 'ROLE_USER'}">
+      <a th:href="@{/add}" class="btn btn-success">Agregar Producto</a>
+  </div>
+
+  <table class="table table-striped table-bordered table-hover">
+      <thead class="table-dark">
+      <tr>
+          <th>ID</th>
+          <th>Nombre</th>
+          <th>Precio</th>
+          <th>Categoria</th>
+          <th>Stock</th>
+          <th>Descripción</th>
+          <th class="text-center" th:if="${role != 'ROLE_USER'}">Opciones</th>
+      </tr>
+      </thead>
+      <tbody>
+      <tr th:each="product : ${products}">
+          <td th:text="${product.id}"></td>
+          <td th:text="${product.name}"></td>
+          <td th:text="${product.price}"></td>
+          <td th:text="${product.category.name}"></td>
+          <td th:text="${product.stock}"></td>
+          <td th:text="${product.description}"></td>
+          <td class="text-center" th:if="${role != 'ROLE_USER'}">
+              <div class="d-inline-flex gap-2">
+                  <a class="btn btn-warning btn-sm" th:href="@{/product/edit/{id}(id=${product.id})}">Editar</a>
+                  <form th:action="@{/product/delete/{id}(id=${product.id})}" method="post"
+                        onsubmit="return confirm('¿Seguro que quiere eliminar este producto?')">
+                      <button type="submit" class="btn btn-danger btn-sm">Eliminar</button>
+                  </form>
+              </div>
+      </tr>
+      </tbody>
+
+  </table>
+</div>
+</script>
+<script id="codigo-angular" type="text/plain">
+  /*
+  //////importaciones
+  ng new proyecto-nucleo 
+  npm install firebase  
+  firebase login                                                                                           
+  firebase logout                                                                                              
+  npm install -g firebase-tools    
+  npm i bootstrap-icons   
+  npm i @ng-icons/core @ng-icons/bootstrap-icons   
+  ng s -o     
+/////////////////////guardianes
+  ng g guard permissions 
+  ng g guard warnings
+/////////////////////////navbar
+<nav class="navbar navbar-expand-lg bg-light">
+  <div class="container-fluid">
+      <a class="navbar-brand" routerLink="/home">Tienda</a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarSupportedContent"
+          aria-controls="navbarSupportedContent" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse" id="navbarSupportedContent">
+          <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+              <li class="nav-item">
+                  <a class="nav-link" aria-current="page" routerLink="/home" routerLinkActive="active">Home</a>
+              </li>
+              <li class="nav-item">
+                  <a class="nav-link" aria-current="page" routerLink="/products"
+                      routerLinkActive="active">Productos</a>
+              </li>
+          </ul>
+      </div>
+      <div class="hstack gap-3">
+          <a class="bi bi-cart" (click)="openCart()" style="cursor: pointer;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor" class="bi bi-cart"
+                  viewBox="0 0 16 16">
+                  <path
+                      d="M0 1.5A.5.5 0 0 1 .5 1H2a.5.5 0 0 1 .485.379L2.89 3H14.5a.5.5 0 0 1 .491.592l-1.5 8A.5.5 0 0 1 13 12H4a.5.5 0 0 1-.491-.408L2.01 3.607 1.61 2H.5a.5.5 0 0 1-.5-.5M3.102 4l1.313 7h8.17l1.313-7zM5 12a2 2 0 1 0 0 4 2 2 0 0 0 0-4m7 0a2 2 0 1 0 0 4 2 2 0 0 0 0-4m-7 1a1 1 0 1 1 0 2 1 1 0 0 1 0-2m7 0a1 1 0 1 1 0 2 1 1 0 0 1 0-2" />
+              </svg>
+          </a>
+          @if(getCurrentUser()){
+              @if(getCurrentUser()?.photoURL){
+              <img 
+                  (click)="logout()"
+                  class="rounded-circle" 
+                  [src]="getCurrentUser()?.photoURL" 
+                  [alt]="getCurrentUser()?.displayName"
+                  style="width: 30px; height: 30px; object-fit: cover; cursor: pointer;" />
+              } @else {
+              <a (click)="logout()" class="bi bi-person-check" style="cursor: pointer;">
+                  <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                      class="bi bi-person-check" viewBox="0 0 16 16">
+                      <path
+                          d="M12.5 16a3.5 3.5 0 1 0 0-7 3.5 3.5 0 0 0 0 7m1.679-4.493-1.335 2.226a.75.75 0 0 1-1.174.144l-.774-.773a.5.5 0 0 1 .708-.708l.547.548 1.17-1.951a.5.5 0 1 1 .858.514M11 5a3 3 0 1 1-6 0 3 3 0 0 1 6 0M8 7a2 2 0 1 0 0-4 2 2 0 0 0 0 4" />
+                      <path
+                          d="M8.256 14a4.5 4.5 0 0 1-.229-1.004H3c.001-.246.154-.986.832-1.664C4.484 10.68 5.711 10 8 10q.39 0 .74.025c.226-.341.496-.65.804-.918Q8.844 9.002 8 9c-5 0-6 3-6 4s1 1 1 1z" />
+                  </svg>
+              </a>
+              }
+       } @else {
+          <a class="bi bi-person-circle" routerLink="/login" style="cursor: pointer;">
+              <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="currentColor"
+                  class="bi bi-person-circle" viewBox="0 0 16 16">
+                  <path d="M11 6a3 3 0 1 1-6 0 3 3 0 0 1 6 0" />
+                  <path fill-rule="evenodd"
+                      d="M0 8a8 8 0 1 1 16 0A8 8 0 0 1 0 8m8-7a7 7 0 0 0-5.468 11.37C3.242 11.226 4.805 10 8 10s4.757 1.225 5.468 2.37A7 7 0 0 0 8 1" />
+              </svg>
+          </a>
+          }
+      </div>
+  </div>
+</nav>
+///////////////////////////////////login
+<div class="container-fluid text-center" style="width: 30%;">
+  <form class="d-flex flex-column gap-3" [formGroup]="loginForm" (ngSubmit)="login()">
+      <div class="mb-3">
+          <label for="email" class="form-label">Correo</label>
+          <input formControlName="email" type="email" class="form-control" id="email" aria-describedby="emailHelp">
+          @if((email?.hasError("required") || email?.hasError("email")) && email?.touched) {
+              <div class="text-danger">
+                  Correo inválido
+              </div>
+          }
+      </div>
+      <div class="mb-3">
+          <label for="password" class="form-label">Contraseña</label>
+          <input formControlName="password" type="password" class="form-control" id="password">
+          @if(password?.hasError("required") && password?.touched) {
+              <div class="text-danger">
+                  Contraseña requerida
+              </div>                
+          }
+          @if(password?.hasError("minlength") && password?.touched) {
+              <div class="text-danger">
+                  La contraseña debe tener al menos 6 caracteres
+              </div>
+          }
+      </div>
+      @if(showRegister){
+          <div class="mb-3">
+              <label for="confirmPassword" class="form-label">Confirmar contraseña</label>
+              <input formControlName="confirmPassword" type="password" class="form-control" id="confirmPassword">            
+              @if(confirmPassword?.hasError("confirmPassword") && confirmPassword?.touched) {
+                  <div class="text-danger">
+                      Las contraseñas no coinciden
+                  </div>
+              }
+          </div>            
+      }
+      <div class="vstack gap-2 mx-auto" style="width: 70%;">
+          <button type="submit" class="btn btn-primary">
+              @if(showRegister){
+                  Registrarse
+              } @else {
+                  Iniciar sesión
+              }
+          </button>
+          <button type="button" class="btn btn-success" (click)="registerWithGoogle()">
+              <div class="d-flex justify-content-center align-items-center">
+                  Iniciar sesión con Google
+                  <ng-icon icon="bootstrapGoogle"></ng-icon>
+              </div>
+          </button>
+      </div>
+      <span>
+          @if(showRegister){
+              ¿Ya tienes una cuenta? 
+              <a class="link-primary" (click)="toggleRegister()">Inicia sesión</a>
+          } @else {
+              No tienes una cuenta? 
+              <a class="link-primary" (click)="toggleRegister()">Regístrate</a>
+          }
+      </span>
+      @if(errorMessage){
+          <div>
+              <span class="text-danger">{{errorMessage}}</span>
+          </div>
+      }
+  </form>
+  <ng-icon icon="bootstrapGoogle"></ng-icon>
+</div>
+///////////////////////////////////////////////////login.component
+@Component({
+  selector: 'app-login',
+  standalone: true,
+  imports: [ReactiveFormsModule, NgIconComponent],
+  providers: [provideIcons({ bootstrapGoogle })],
+  templateUrl: './login.component.html',
+  styleUrl: './login.component.css'
+})
+export class LoginComponent {
+  loginForm: FormGroup;
+  errorMessage: string = "";
+  showRegister: boolean = false;
+
+  constructor(
+    private formBuilder: FormBuilder, 
+    private authService: AuthService,
+    private usersService: UsersService
+  ){
+    this.loginForm = this.formBuilder.group({
+      email: ["", [Validators.required, Validators.email]],
+      password: ["", [Validators.required, Validators.minLength(6)]],
+      confirmPassword: ["", [this.confirmPasswordValidator()]]
+    });
+  }
+
+  login(){
+    if(this.email?.invalid || this.password?.invalid) return;
+    if(this.showRegister){
+      if(this.confirmPassword?.invalid) return;
+      this.authService.registerWithEmail(this.email?.value, this.password?.value)
+        .then(() => {
+          this.errorMessage = "";
+          this.usersService.loadUserInFirebase();
+        })
+        .catch(err => {
+          console.log(err);
+          this.errorMessage = err.message;
+        });
+      return;
+    }
+    this.authService.loginWithEmail(this.email?.value, this.password?.value)
+      .then(() => {
+        this.errorMessage = "";
+        this.usersService.loadUserInFirebase();
+      })
+      .catch(err => {
+        console.log(err);
+        this.errorMessage = err.message;
+      });
+  }
+
+  registerWithGoogle(){
+    this.authService.loginWithGoogle()
+      .then(() => {
+        this.errorMessage = "";
+        this.usersService.loadUserInFirebase();
+      })
+      .catch(err => {
+        console.log(err);
+        this.errorMessage = err.message;
+      });
+  }
+
+  toggleRegister(){
+    this.showRegister = !this.showRegister;
+  }
+
+  get email() { return this.loginForm.get("email") };
+  get password() { return this.loginForm.get("password") };
+  get confirmPassword() { return this.loginForm.get("confirmPassword") };
+
+  confirmPasswordValidator(): ValidatorFn {
+    return (control: AbstractControl): ValidationErrors | null => {
+      if(!this.showRegister) return null;
+      const error = this.password?.value !== control.value;
+      return error ? {confirmPassword: {value: control.value}} : null;
+    };
+  }  
+}
+//////////////////////////////////////////////////////////////////product
+<nav aria-label="breadcrumb">
+  <ol class="breadcrumb">
+      <li class="breadcrumb-item"><a routerLink="/home">Home</a></li>
+      <li class="breadcrumb-item"><a routerLink="/products">Productos</a></li>
+      <li class="breadcrumb-item active" aria-current="page">{{ product!.title }}</li>
+  </ol>
+</nav>
+<div class="container-fluid text-center">
+  <h1>{{ product!.title }}</h1>
+  <div class="row">
+      <div class="col-md-6">
+          <img [src]="product!.image" [alt]="product!.title" class="img-fluid" />
+      </div>
+      <div class="col-md-6">
+          <h3>Precio: $ {{product!.price.toFixed(2)}}</h3>
+          <p>{{product!.description}}</p>
+          <a routerLink="/products" class="btn btn-primary">Regresar a la tienda</a>
+      </div>
+  </div>
+</div>
+//////////////////////////////////product.component
+@Component({
+  selector: 'app-product',
+  standalone: true,
+  imports: [RouterLink],
+  templateUrl: './product.component.html',
+  styleUrl: './product.component.css'
+})
+export class ProductComponent {
+  product: Product | undefined;
+
+  constructor(private activatedRoute: ActivatedRoute, private productsService: ProductsService) {}
+
+  ngOnInit(){
+    this.activatedRoute.params.subscribe(params => {
+      const id = params['id'];
+      this.productsService.getProduct(id).subscribe(product => {
+        this.product = product;
+      });
+    })
+  }
+}
+//////////////////////////////////////////////////product-form
+
+<form 
+    [formGroup]="form" 
+    class="d-flex text-center mx-auto align-items-stretch flex-column gap-3" 
+    style="width: 40%;"
+    (ngSubmit)="id != 0 ? updateProduct() : addProduct()"
+    >
+    <div>
+        <label for="title" class="form-label">Nombre del Producto</label>
+        <input id="title" formControlName="title" class="form-control">
+    </div>
+    <div>
+        <label for="description" class="form-label">Descripción</label>
+        <textarea id="description" formControlName="description" class="form-control" rows="3"></textarea>
+    </div>    
+    <div>
+        <label for="price" class="form-label">Precio</label>
+        <input type="number" id="price" formControlName="price" class="form-control">
+    </div>  
+    <div>
+        <label for="image" class="form-label">Imagen</label>
+        <input type="url" id="image" formControlName="image" class="form-control">
+    </div>  
+    <button type="submit" class="btn btn-success">
+        @if(id != 0){
+            Actualizar
+        } @else {
+            Agregar
+        }
+    </button>    
+</form>
+/////////////////////////////////////////////////////////////product-form.component
+@Component({
+  selector: 'app-product-form',
+  standalone: true,
+  imports: [ReactiveFormsModule],
+  templateUrl: './product-form.component.html',
+  styleUrl: './product-form.component.css'
+})
+export class ProductFormComponent {
+  form: FormGroup;
+  id: number = 0;
+
+  constructor(
+    private productsService: ProductsService, 
+    private formBuilder: FormBuilder,
+    private router: Router,
+    private activatedRoute: ActivatedRoute
+  ) {
+    this.form = this.formBuilder.group({
+      title: ["", [Validators.required]],
+      description: [""],
+      price: [0, [Validators.required]],
+      category: [""],
+      image: [""],
+      rating: [{rate: 0, count: 0}]
+    })
+  }
+
+  ngOnInit(){
+    this.activatedRoute.params.subscribe(params => {
+      this.id = params['id'];
+      if(!this.id) return;
+      this.productsService.getProduct(this.id).subscribe(product => {
+        this.form.patchValue(product);
+      });
+    })
+  }  
+
+  addProduct(){
+    if(this.form.invalid) return;
+    this.productsService.addProduct(this.form.value)
+      .then(() => this.router.navigate(["/products"]))
+      .catch(err => console.log(err));
+  }
+
+  updateProduct(){
+    if(this.form.invalid) return;
+    this.productsService.updateProduct({ id: this.id, ...this.form.value})
+      .then(() => this.router.navigate(["/products"]))
+      .catch(err => console.log(err));
+  }
+}
+///////////////////////////////////////////////////products
+<div class="container-fluid text-center">
+  <h1>Productos</h1>
+  <button type="button" class="btn btn-primary mb-3" routerLink="/product-form/0">Agregar producto</button>
+  <div class="d-flex justify-content-center align-content-center flex-wrap gap-5">
+      @for(product of products; track $index){
+          <div class="card" style="width: 18rem;" (click)="goToProduct(product.id)">
+              <img 
+                  [src]="product.image" 
+                  class="card-img-top p-3"
+                  style="height: 200px; width: fit-content; max-width: 100%; margin-inline: auto;" 
+                  [alt]="product.title">
+              <div class="card-body">
+                  <h5 class="card-title">{{product.title}}</h5>
+                  <h6 class="card-subtitle mb-2">$ {{product.price.toFixed(2)}}</h6>
+                  <a (click)="addToCart($event, product)" class="btn btn-primary">Añadir al carrito</a>
+                  @if(role == "admin"){
+                      <a [routerLink]="['/product-form', product.id]" class="btn btn-success">Actualizar</a>
+                      <a (click)="deleteProduct($event, product.id)" class="btn btn-danger">Eliminar</a>
+                  }
+              </div>
+          </div>
+      }
+  </div>
+</div>
+///////////////////////////////////////////////////////////products.component
+@Component({
+  selector: 'app-products',
+  standalone: true,
+  imports: [RouterLink],
+  templateUrl: './products.component.html',
+  styleUrl: './products.component.css'
+})
+export class ProductsComponent {
+  products: Product[] = [];
+  role: string = 'user';
+
+  constructor(
+    private router: Router, 
+    private productsService: ProductsService,
+    private cartService: CartService,
+    private usersService: UsersService
+  ) {}
+
+  ngOnInit(){
+    this.getProducts();
+    this.productsService.loadProductstoFirebase();
+    this.getRole();
+  }
+
+  goToProduct(id: number) {
+    this.router.navigate(['/products', id]);
+  }
+
+  getProducts() {
+    this.productsService.getProducts().subscribe(products => {
+      this.products = products;
+    });
+  }
+
+  addToCart(event: Event, product: Product) {
+    event.stopPropagation();
+    this.cartService.addProduct(product);
+  }
+
+  deleteProduct(event: Event, id: number) {
+    event.stopPropagation();
+    this.productsService.deleteProduct(id)
+      .then(() => console.log("Producto eliminado con exito"))
+      .catch(err => console.log(err));
+  }
+
+  getRole() {
+    this.usersService.getCurrentUser()!
+      .then(user => {
+        console.log(user);
+        this.role = user?.["role"]
+      });
+  }
+}
+///////////////////////////////services////////////////////////////////////////
+////////////////////////auth
+import { 
+  Auth, 
+  createUserWithEmailAndPassword, 
+  GoogleAuthProvider, 
+  signInWithEmailAndPassword, 
+  signInWithPopup, 
+  signOut 
+} from '@angular/fire/auth';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class AuthService {
+
+  constructor(private auth: Auth) { }
+
+  loginWithEmail(email: string, password: string) {
+    return signInWithEmailAndPassword(this.auth, email, password);
+  }
+
+  registerWithEmail(email: string, password: string) {
+    return createUserWithEmailAndPassword(this.auth, email, password);
+  }
+
+  loginWithGoogle() {
+    const provider = new GoogleAuthProvider();
+    return signInWithPopup(this.auth, provider);
+  }
+
+  logout(){
+    return signOut(this.auth);
+  }
+
+  getCurrentUser() {
+    return this.auth.currentUser;
+  }
+}
+////////////////////////////////////cart
+@Injectable({
+  providedIn: 'root'
+})
+export class CartService {
+  private products: Product[] = [];
+  private cartVisible = false;
+
+  constructor() { }
+
+  addProduct(product: Product) {
+    this.products.push(product);
+  }
+
+  removeProduct(product: Product) {
+    const index = this.products.indexOf(product);
+    if (index !== -1) {
+      this.products.splice(index, 1);
+    }
+  }
+
+  getTotal() {
+    return this.products.reduce((total, product) => total + product.price, 0);
+  }
+
+  getProducts() {
+    return this.products;
+  }
+
+  isCartVisible() {
+    return this.cartVisible;
+  }
+
+  showCart() {
+    this.cartVisible = true;
+  }
+
+  hideCart() {
+    this.cartVisible = false;
+  }
+}
+///////////////////////////////products
+import { 
+  addDoc, 
+  collection, 
+  collectionData, 
+  count, 
+  deleteDoc, 
+  doc, 
+  docData, 
+  Firestore, 
+  getDocs, 
+  setDoc } from '@angular/fire/firestore';
+
+@Injectable({
+  providedIn: 'root'
+})
+export class ProductsService {
+
+  private url = 'https://fakestoreapi.com/products';
+
+  constructor(private http: HttpClient, private firestore: Firestore) { }
+
+  getProducts(): Observable<Product[]> {
+    // return this.http.get<Product[]>(this.url);
+    const productsRef = collection(this.firestore, "products");
+    return collectionData(productsRef) as Observable<Product[]>;
+  }
+
+  getProduct(id: number): Observable<Product> {
+    // return this.http.get<Product>(`${this.url}/${id}`);
+    const productRef = doc(this.firestore, "products", id.toString());
+    return docData(productRef) as Observable<Product>;
+  }
+
+  addProduct(product: Product) {
+    const productsRef = collection(this.firestore, "products");
+    return getDocs(productsRef).then(snapshot => {
+      const maxId = snapshot.docs.reduce((max, product) => Math.max(max, Number(product.id)), 0);
+      product.id = maxId + 1;
+      return this.updateProduct(product);
+    });
+  }
+
+  updateProduct(product: Product){
+    const productRef = doc(this.firestore, "products", product.id.toString());
+    return setDoc(productRef, product, {merge: true});
+  }
+
+  deleteProduct(id: number) {
+    const productRef = doc(this.firestore, "products", id.toString());
+    return deleteDoc(productRef);
+  }
+
+  loadProductstoFirebase() {
+    this.getProducts().subscribe(products => {
+      products.forEach(product => {
+        const productRef = doc(this.firestore, "products", product.id.toString());
+        setDoc(productRef, product);
+      })
+    });
+  }
+}
+//////////////////////////////////////////users
+@Injectable({
+  providedIn: 'root'
+})
+export class UsersService {
+
+  constructor(private firestore: Firestore, private authService: AuthService) { }
+
+  async loadUserInFirebase() {
+    const user = this.authService.getCurrentUser();
+    if (!user) return;
+    const userRef = doc(this.firestore, "users", user.uid);
+    const userData = getDoc(userRef);
+    if(await userData.then(doc => doc.exists())) return;
+    setDoc(userRef, {
+      email: user.email,
+      photoURL: user.photoURL,
+      displayName: user.displayName,
+      role: "user"
+    });
+  }
+
+  getCurrentUser(){
+    const user = this.authService.getCurrentUser();
+    if (!user) return null;
+    const userRef = doc(this.firestore, "users", user.uid);
+    return getDoc(userRef).then(doc => doc.data());
+  }
+}
+////////////////////////////////////types///////////////////////
+///////////////types
+type Rating = {
+  rate: number;
+  count: number;
+}
+
+export type Product = {
+  id: number;
+  title: string;
+  price: number;
+  description: string;
+  category: string;
+  image: string;
+  rating: Rating;
+}
+/////////////////////////////////app
+<main class="d-flex flex-column" style="height: 100%; min-height: 100%;">
+  <app-nav-bar></app-nav-bar>
+  <div class="d-flex flex-column justify-content-between align-items-center" style="height: 100%;">
+    <div class="container-fluid p-2">
+      <router-outlet />
+    </div>
+    <app-footer></app-footer>
+  </div>
+  @if(isCartVisible()){
+    <app-cart></app-cart>
+  }
+</main>
+//////////////////////////////////////////app.component
+@Component({
+  selector: 'app-root',
+  standalone: true,
+  imports: [RouterOutlet, NavBarComponent, FooterComponent, CartComponent],
+  templateUrl: './app.component.html',
+  styleUrl: './app.component.css'
+})
+export class AppComponent {
+  title = 'proyecto-nucleo';
+
+  constructor(private cartService: CartService) { }
+
+  isCartVisible() {
+    return this.cartService.isCartVisible();
+  }
+}
+//////////////////////////////app routes
+export const routes: Routes = [
+    { path: 'home', component: HomeComponent },
+    {
+        path: 'products',
+        component: ProductsComponent,
+        ...canActivate(() => redirectUnauthorizedTo(["/login"]))
+    },
+    { 
+        path: 'products/:id', 
+        component: ProductComponent,
+        canActivate: [permissionsGuard]
+    },
+    { path: 'product-form/:id', component: ProductFormComponent, canDeactivate: [warningsGuard] },
+    { path: 'login', component: LoginComponent },
+    { path: '', redirectTo: '/home', pathMatch: 'full' },
+    { path: '**', component: NotFoundComponent }
+];
+//////////////////////////////////////////index.html
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <title>ProyectoNucleo</title>
+  <base href="/">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="icon" type="image/x-icon" href="favicon.ico">
+</head>
+<body style="height: 100vh; min-height: 100vh;">
+  <app-root></app-root>
+</body>
+</html>
+*/
+</script>
+
+<script id="codigo-android" type="text/plain">
+ 
+</script>
+
+
+<script>
+   function copiarCodigo(id) {
+    const contenido = document.getElementById(id).textContent;
+    navigator.clipboard.writeText(contenido).catch(console.error);
+  }
+</script>
       
       
           <div class="v1_15">
